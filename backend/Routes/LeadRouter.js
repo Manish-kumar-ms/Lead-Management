@@ -7,7 +7,8 @@ const router=express.Router()
 
 
 router.get("/",ensureAuthenticated,getLeads)
-router.get("/:id",ensureAuthenticated,getLeadById)
 router.get("/analytics", ensureAuthenticated, getLeadAnalytics);
+router.get("/:id",ensureAuthenticated,getLeadById)
+
 
 export default router 

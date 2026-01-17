@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
 import { UserDataContext } from "../context/UserContext";
+import LeadAnalytics from "./LeadAnalyticsModal";
+import LeadAnalyticsModal from "./LeadAnalyticsModal";
 
 
 
@@ -29,8 +31,10 @@ export default function LeadsList() {
   // UI
   const [showFilters, setShowFilters] = useState(false);
 
-    const { serverUrl } = useContext(UserDataContext);
-  
+  const { serverUrl } = useContext(UserDataContext);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+
+
 
   /* ===================== HELPERS ===================== */
   const formatDate = (date) =>
@@ -41,49 +45,49 @@ export default function LeadsList() {
     });
 
   /* ===================== API ===================== */
- const fetchLeads = async ({
-  searchValue = search,
-  statusValue = status,
-  sourceValue = source,
-  sortOrderValue = sortOrder,
-  pageValue = page,
-} = {}) => {
-  try {
-    setLoading(true);
+  const fetchLeads = async ({
+    searchValue = search,
+    statusValue = status,
+    sourceValue = source,
+    sortOrderValue = sortOrder,
+    pageValue = page,
+  } = {}) => {
+    try {
+      setLoading(true);
 
-    const res = await axios.get(`${serverUrl}/api/leads`, {
-      params: {
-        search: searchValue,
-        status: statusValue,
-        source: sourceValue,
-        sortBy: "createdAt",
-        sortOrder: sortOrderValue,
-        page: pageValue,
-        limit,
-      },
-      withCredentials: true,
-    });
+      const res = await axios.get(`${serverUrl}/api/leads`, {
+        params: {
+          search: searchValue,
+          status: statusValue,
+          source: sourceValue,
+          sortBy: "createdAt",
+          sortOrder: sortOrderValue,
+          page: pageValue,
+          limit,
+        },
+        withCredentials: true,
+      });
 
-    setLeads(res.data.data);
-    setTotalPages(res.data.pagination.pages);
-  } catch (err) {
-    console.error("Error fetching leads", err);
-  } finally {
-    setLoading(false);
-  }
-};
+      setLeads(res.data.data);
+      setTotalPages(res.data.pagination.pages);
+    } catch (err) {
+      console.error("Error fetching leads", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   /* ===================== DEBOUNCED SEARCH ===================== */
- const debouncedSearch = useCallback(
-  debounce((value) => {
-    setPage(1);
-    fetchLeads({
-      searchValue: value,
-      pageValue: 1,
-    });
-  }, 500),
-  [status, source, sortOrder]
-);
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setPage(1);
+      fetchLeads({
+        searchValue: value,
+        pageValue: 1,
+      });
+    }, 500),
+    [status, source, sortOrder]
+  );
 
 
   useEffect(() => {
@@ -103,23 +107,23 @@ export default function LeadsList() {
     setShowFilters(false);
   };
 
- const resetFilters = () => {
-  setSearch("");
-  setStatus("");
-  setSource("");
-  setSortOrder("desc");
-  setPage(1);
-  setShowFilters(false);
+  const resetFilters = () => {
+    setSearch("");
+    setStatus("");
+    setSource("");
+    setSortOrder("desc");
+    setPage(1);
+    setShowFilters(false);
 
-  // ✅ explicit clean call (no stale state)
-  fetchLeads({
-    searchValue: "",
-    statusValue: "",
-    sourceValue: "",
-    sortOrderValue: "desc",
-    pageValue: 1,
-  });
-};
+    // ✅ explicit clean call (no stale state)
+    fetchLeads({
+      searchValue: "",
+      statusValue: "",
+      sourceValue: "",
+      sortOrderValue: "desc",
+      pageValue: 1,
+    });
+  };
 
 
   /* ===================== BADGE COLORS ===================== */
@@ -145,14 +149,24 @@ export default function LeadsList() {
       <div className="max-w-7xl mx-auto">
 
         {/* HEADER */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Leads Dashboard
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Search, filter and manage your leads
-          </p>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Leads Dashboard
+            </h1>
+            <p className="text-gray-600 mt-1">
+              Search, filter and manage your leads
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowAnalytics(true)}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+          >
+            View Analytics
+          </button>
         </div>
+
 
         {/* SEARCH + FILTER ICON */}
         <div className="bg-white rounded-lg shadow p-4 mb-4">
@@ -207,9 +221,8 @@ export default function LeadsList() {
 
         {/* FILTER PANEL */}
         <div
-          className={`overflow-hidden transition-all duration-300 ease-in-out ${
-            showFilters ? "max-h-[500px] opacity-100 mb-6" : "max-h-0 opacity-0"
-          }`}
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${showFilters ? "max-h-[500px] opacity-100 mb-6" : "max-h-0 opacity-0"
+            }`}
         >
           <div className="bg-white rounded-lg shadow p-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -367,6 +380,13 @@ export default function LeadsList() {
             </button>
           </div>
         )}
+
+        {/* ANALYTICS MODAL */}
+        <LeadAnalyticsModal
+          isOpen={showAnalytics}
+          onClose={() => setShowAnalytics(false)}
+        />
+
 
       </div>
     </div>
