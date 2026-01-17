@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser';
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
-import connectDB from './config/db.js';
+import connectDB from './Config/db.js';
 import AuthRouter from './Routes/AuthRouter.js';
 import LeadRouter from './Routes/LeadRouter.js';
 
