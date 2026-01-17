@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 8080
 app.use(express.json())
 app.use(cookieParser())
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: "https://lead-management-frontend-j06o.onrender.com",
     credentials: true
 }));
 
