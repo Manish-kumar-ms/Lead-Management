@@ -40,7 +40,7 @@ const Login = () => {
         setUserData({ email, name, jwtToken });
         handleSucess(message)
         setTimeout(() => {
-          navigate('/home')
+          navigate('/')
         }, 1000);
       }
 
