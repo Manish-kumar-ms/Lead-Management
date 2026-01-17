@@ -40,7 +40,7 @@ const Signup = () => {
         console.log(response.data)
         if(success){
             handleSucess(message)
-            navigate('/home')
+            navigate('/')
         }
 
       } catch (error) {
